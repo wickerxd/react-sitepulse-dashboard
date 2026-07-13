@@ -13,8 +13,6 @@ export default function InfoCard({ title, children }: InfoCardProps) {
     <Card
       sx={{
         minWidth: 175,
-        width: "100%",
-        flexGrow: 1,
       }}
     >
       <CardContent>

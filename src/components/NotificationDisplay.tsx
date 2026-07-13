@@ -1,6 +1,6 @@
 import { Box, Typography, Button } from "@mui/material";
 import { workers } from "../data";
-type Severity = "critical" | "high" | "medium" | "low";
+export type Severity = "critical" | "high" | "medium" | "low";
 type AlertType = "proximity" | "ppe_violation" | "alien_attack";
 
 const alertText: Record<AlertType, string> = {
