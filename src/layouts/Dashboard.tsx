@@ -1,17 +1,17 @@
 // src/layouts/DashboardLayout.tsx
 import { Outlet } from "react-router-dom";
 import Header from "../components/Header";
-import "./DashboardLayout.css";
+import Container from "@mui/material/Container";
 
-function DashboardLayout() {
+function Dashboard() {
   return (
     <>
       <Header />
-      <main className="dashboard-content">
+      <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
         <Outlet />
-      </main>
+      </Container>
     </>
   );
 }
 
-export default DashboardLayout;
+export default Dashboard;

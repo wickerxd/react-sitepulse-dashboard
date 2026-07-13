@@ -1,4 +1,3 @@
-// src/App.tsx
 import { Routes, Route } from "react-router-dom";
 import Dashboard from "./layouts/Dashboard";
 import Accidents from "./pages/Accidents";
@@ -14,7 +13,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Dashboard />}>
         <Route index element={<Overview />} />
-        <Route path="worker" element={<Worker />} />
+        <Route path="worker/:id" element={<Worker />} />
         <Route path="roles" element={<Roles />} />
         <Route path="construction_sites" element={<ConstructionSites />} />
         <Route path="accidents" element={<Accidents />} />
