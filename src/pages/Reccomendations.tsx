@@ -98,7 +98,7 @@ export default function Reccomendations() {
                 width={200}
                 height={200}
                 value={60}
-                sx={(theme) => ({
+                sx={() => ({
                   [`& .${gaugeClasses.valueArc}`]: {
                     fill: "#c78c0a",
                   },
