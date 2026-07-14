@@ -224,7 +224,7 @@ export default function Reccomendations() {
           <Box
             sx={{
               display: "flex",
-              flexDirection: "row",
+              flexDirection: { xs: "column", md: "row" },
               gap: 2,
             }}
           >
