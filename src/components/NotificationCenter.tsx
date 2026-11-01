@@ -1,21 +1,28 @@
-import { Box } from "@mui/material";
-import { grey } from "@mui/material/colors";
-import { Typography } from "@mui/material";
+import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
-import NotificationDisplay, { type Alert } from "./NotificationDisplay";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import { grey } from "@mui/material/colors";
+import NotificationDisplay from "./NotificationDisplay";
+import type { Alert } from "../types";
 
 interface NotificationCenterProps {
   alerts: Alert[];
 }
 
 function alertChipText(alerts: Alert[]): string {
-  return `${alerts.filter((alert) => alert.severity === "critical").length} Critical • ${alerts.filter((alert) => alert.severity === "high").length} High`;
+  const critical = alerts.filter((alert) => alert.severity === "critical").length;
+  const high = alerts.filter((alert) => alert.severity === "high").length;
+
+  return `${critical} Critical • ${high} High`;
 }
+
 export default function NotificationCenter({
   alerts,
 }: NotificationCenterProps) {
   return (
     <Box
+      component="section"
       sx={{
         p: 2,
         background: grey[300],
@@ -23,25 +30,27 @@ export default function NotificationCenter({
         borderRadius: 2,
       }}
     >
-      <Box
+      <Stack
+        direction="row"
         sx={{
-          display: "flex",
-          flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
           marginBottom: 1,
         }}
       >
         <Typography
+          component="h2"
           sx={{ color: "text.primary", fontSize: 20, fontWeight: 700 }}
         >
-          Ειδοποίησεις
+          Ειδοποιήσεις
         </Typography>
         <Chip label={alertChipText(alerts)} color="error" />
-      </Box>
-      {alerts.map((alert) => (
-        <NotificationDisplay key={alert.id} alert={alert}></NotificationDisplay>
-      ))}
+      </Stack>
+      <Stack spacing={1}>
+        {alerts.map((alert) => (
+          <NotificationDisplay key={alert.id} alert={alert} />
+        ))}
+      </Stack>
     </Box>
   );
 }

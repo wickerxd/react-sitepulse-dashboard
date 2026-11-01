@@ -1,13 +1,12 @@
 import Grid from "@mui/material/Grid";
-import OverviewKPIs, { type KPI } from "../components/OverviewKPIs";
+import KpiGrid from "../components/KpiGrid";
+import type { Kpi } from "../components/KpiGrid";
 import NotificationCenter from "../components/NotificationCenter";
-import { alerts, workers } from "../data";
-import type { Alert } from "../components/NotificationDisplay";
 import WorkerTab from "../components/WorkerTab";
-import type { Worker } from "./Worker";
+import { alerts, workers } from "../data";
 
 export default function Overview() {
-  const KPis: KPI[] = [
+  const kpis: Kpi[] = [
     { type: "text", title: "Εργαζόμενοι στο πεδίο", content: workers.length },
     {
       type: "percentage",
@@ -15,24 +14,25 @@ export default function Overview() {
       content:
         workers.filter((worker) => worker.compliant).length / workers.length,
     },
-    { type: "text", title: "Ενεργές ειδοποίησεις", content: alerts.length },
+    { type: "text", title: "Ενεργές ειδοποιήσεις", content: alerts.length },
     {
       type: "critical",
       title: "Critical",
       content: alerts.filter((alert) => alert.severity === "critical").length,
     },
   ];
+
   return (
     <>
-      <OverviewKPIs KPIs={KPis} />
+      <KpiGrid kpis={kpis} />
 
       <Grid container spacing={2} sx={{ width: "100%", mx: 0, my: 6 }}>
         <Grid size={{ xs: 12, md: 8 }}>
-          <WorkerTab workers={workers as Worker[]}></WorkerTab>
+          <WorkerTab workers={workers} />
         </Grid>
 
         <Grid size={{ xs: 12, md: 4 }}>
-          <NotificationCenter alerts={alerts as Alert[]} />
+          <NotificationCenter alerts={alerts} />
         </Grid>
       </Grid>
     </>

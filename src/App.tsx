@@ -1,12 +1,14 @@
-import { Routes, Route } from "react-router-dom";
+import { lazy } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Dashboard from "./layouts/Dashboard";
-import Accidents from "./pages/Accidents";
-import ConstructionSites from "./pages/ConstructionSites";
-import Overview from "./pages/Overview";
-import Reccomendations from "./pages/Reccomendations";
-import Robot from "./pages/Robot";
-import Roles from "./pages/Roles";
-import Worker from "./pages/Worker";
+
+const Overview = lazy(() => import("./pages/Overview"));
+const Worker = lazy(() => import("./pages/Worker"));
+const Roles = lazy(() => import("./pages/Roles"));
+const ConstructionSites = lazy(() => import("./pages/ConstructionSites"));
+const Accidents = lazy(() => import("./pages/Accidents"));
+const Robot = lazy(() => import("./pages/Robot"));
+const Recommendations = lazy(() => import("./pages/Recommendations"));
 
 function App() {
   return (
@@ -19,7 +21,13 @@ function App() {
         <Route path="construction_sites" element={<ConstructionSites />} />
         <Route path="accidents" element={<Accidents />} />
         <Route path="robot" element={<Robot />} />
-        <Route path="reccomendations" element={<Reccomendations />} />
+        <Route path="recommendations" element={<Recommendations />} />
+        <Route path="recommendations/:id" element={<Recommendations />} />
+        <Route
+          path="reccomendations"
+          element={<Navigate to="/recommendations" replace />}
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
   );

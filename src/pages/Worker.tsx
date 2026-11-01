@@ -1,127 +1,121 @@
-import { useParams } from "react-router-dom";
-import { workers } from "../data";
-import {
-  Avatar,
-  Box,
-  Card,
-  CardContent,
-  Chip,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Link as RouterLink, useParams } from "react-router-dom";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Divider from "@mui/material/Divider";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import type { Severity } from "../components/NotificationDisplay";
-import Divider from "@mui/material/Divider";
-import { SparkLineChart } from "@mui/x-charts/SparkLineChart";
+import Typography from "@mui/material/Typography";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
+import { SparkLineChart } from "@mui/x-charts/SparkLineChart";
+import Panel from "../components/Panel";
+import SeverityChip from "../components/SeverityChip";
+import { alerts, incidents, workers } from "../data";
+import type { Fatigue } from "../types";
 
-type Zone = "Zone A" | "Zone B" | "Zone C";
-type PPE = { helmet: boolean; vest: boolean; gloves: boolean };
-type Fatigue = "high" | "medium" | "low";
-type Role = "Ηλεκτρολόγος" | "Επιθεωρήτρια" | "Επιθεωρητής";
-type Site = "Εργοτάξιο Α" | "Εργοτάξιο Β" | "Εργοτάξιο Γ";
+const fatigueText: Record<Fatigue, string> = {
+  high: "υψηλή",
+  medium: "μέτρια",
+  low: "χαμηλή",
+};
 
-export interface Worker {
-  id: string;
-  name: string;
-  role: Role;
-  site: Site;
-  zone: Zone;
-  ppe: PPE;
-  compliant: boolean;
-  heartRate: number;
-  fatigue: Fatigue;
-  battery: number;
-  connected: boolean;
-  complianceScore: number;
+const complianceOffsets = [-12, -8, -5, -2, 1, 4, 2, 0, 3, 6, 4, 2, 5, 3];
+const heartRateOffsets = [-8, -4, -2, 3, 7, 4, 1, 5, 8, 3, 0, -3, 2, 1];
+const fatigueOffsets = [-6, -2, 1, 4, 8, 5, 2, 6, 9, 4, 1, -2, 3, 0];
+
+function trend(base: number, offsets: number[], max: number): number[] {
+  return offsets.map((offset) => Math.max(0, Math.min(max, base + offset)));
 }
 
-interface HistoryData {
-  id: number;
-  date: string;
-  type: string;
-  zone: Zone;
-  conditions: string;
-  severity: Severity;
+function formatDate(date: string): string {
+  const [year, month, day] = date.split("-");
+  return `${day}/${month}/${year}`;
 }
 
 export default function Worker() {
   const { id } = useParams();
-  const worker = workers.find((w) => w.id === id);
-  const severityColor: Record<Severity, string> = {
-    critical: "error",
-    high: "warning",
-    medium: "secondary",
-    low: "info",
-  };
+  const worker =
+    workers.find((candidate) => candidate.id === id) ?? (id ? undefined : workers[0]);
 
-  const dataRows: HistoryData[] = [
+  if (!worker) {
+    return (
+      <Panel title="Ο εργαζόμενος δεν βρέθηκε">
+        <Typography sx={{ color: "text.secondary" }}>
+          Ο κωδικός εργαζομένου δεν αντιστοιχεί σε κάποια εγγραφή.
+        </Typography>
+        <Button
+          component={RouterLink}
+          to="/"
+          variant="contained"
+          sx={{ alignSelf: "flex-start" }}
+        >
+          Επιστροφή στην επισκόπηση
+        </Button>
+      </Panel>
+    );
+  }
+
+  const workerIncidents = incidents.filter(
+    (incident) => incident.workerId === worker.id,
+  );
+  const workerAlerts = alerts.filter((alert) => alert.workerId === worker.id);
+  const fatigueScore =
+    worker.fatigue === "high" ? 80 : worker.fatigue === "medium" ? 55 : 30;
+
+  const stats = [
     {
-      id: 1,
-      date: "08/07 09:35",
-      type: "Proximity Μηχάνημα",
-      zone: "Zone A",
-      conditions: "Βάρδια πρωί • 36C • Κόπωση: μέτρια ",
-      severity: "critical",
+      label: "Μέση Συμμόρφωση",
+      value: `${worker.complianceScore}%`,
+      color: worker.complianceScore >= 80 ? "green" : "orange",
     },
     {
-      id: 2,
-      date: "06/07 19:55",
-      type: "Λείπουν γάντια",
-      zone: "Zone A",
-      conditions: "Βάρδια βράδυ • 40C • Κόπωση: υψηλή ",
-      severity: "high",
+      label: "Ενεργές ειδοποιήσεις",
+      value: workerAlerts.length,
+      color: "orange",
     },
     {
-      id: 3,
-      date: "01/07 14:35",
-      type: "Λείπει κράνος",
-      zone: "Zone B",
-      conditions: "Βάρδια μεσημέρι • 40C • Κόπωση: μέτρια ",
-      severity: "high",
+      label: "Περιστατικά",
+      value: workerIncidents.length,
+      color: "red",
     },
     {
-      id: 4,
-      date: "29/06 10:35",
-      type: "Λείπει καφές",
-      zone: "Zone A",
-      conditions: "Βάρδια πρωί • 36C • Κόπωση: υψηλή ",
-      severity: "low",
+      label: "Μ.Ο Παλμών",
+      value: `${worker.heartRate} bpm`,
+      color: "darkblue",
     },
   ];
-  if (!worker) return <p>Worker not found</p>;
 
   return (
     <>
-      <Box
+      <Panel
         sx={{
-          p: 2,
-          background: "white",
-          border: "2px solid grey",
-          borderRadius: 2,
-          display: "flex",
           flexDirection: { xs: "column", md: "row" },
           alignItems: { xs: "flex-start", md: "center" },
-          gap: 2,
+          flexWrap: "wrap",
         }}
       >
         <Stack direction="row" sx={{ alignItems: "center" }} spacing={1}>
-          <Avatar alt="User" src="" sx={{ width: 24, height: 24 }} />
+          <Avatar alt={worker.name} sx={{ width: 32, height: 32 }}>
+            {worker.name.charAt(0)}
+          </Avatar>
           <Stack>
             <Typography
+              component="h1"
               sx={{ color: "text.primary", fontSize: 20, fontWeight: 700 }}
             >
-              {worker?.name}
+              {worker.name}
             </Typography>
             <Typography sx={{ color: "text.secondary", fontSize: 12 }}>
-              {worker?.role} • {worker?.site} • {worker?.zone} • {worker?.id}
+              {worker.role} • {worker.site} • {worker.zone} • {worker.id}
             </Typography>
           </Stack>
         </Stack>
@@ -135,210 +129,145 @@ export default function Worker() {
             rowGap: 2,
           }}
         >
-          <Card sx={{ minWidth: 105, maxHeight: { sm: 90, md: 65 } }}>
-            <CardContent>
-              <Typography sx={{ color: "text.secondary", fontSize: 12 }}>
-                Μέση Συμμόρφωση
-              </Typography>
-              <Typography
-                sx={{ color: "green", fontSize: 14, fontWeight: 700 }}
-              >
-                88%
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card sx={{ minWidth: 105, maxHeight: { sm: 90, md: 65 } }}>
-            <CardContent>
-              <Typography sx={{ color: "text.secondary", fontSize: 12 }}>
-                Παραβάσεις (30μ)
-              </Typography>
-              <Typography
-                sx={{ color: "orange", fontSize: 14, fontWeight: 700 }}
-              >
-                14
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card sx={{ minWidth: 105, maxHeight: { sm: 90, md: 65 } }}>
-            <CardContent>
-              <Typography sx={{ color: "text.secondary", fontSize: 12 }}>
-                Περιστατικά
-              </Typography>
-              <Typography sx={{ color: "red", fontSize: 14, fontWeight: 700 }}>
-                2
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card sx={{ minWidth: 105, maxHeight: { sm: 90, md: 65 } }}>
-            <CardContent>
-              <Typography sx={{ color: "text.secondary", fontSize: 12 }}>
-                Μ.Ο Παλμών
-              </Typography>
-              <Typography
-                sx={{ color: "darkblue", fontSize: 14, fontWeight: 700 }}
-              >
-                91 bpm
-              </Typography>
-            </CardContent>
-          </Card>
+          {stats.map((stat) => (
+            <Card key={stat.label} sx={{ minWidth: 120 }}>
+              <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
+                <Typography sx={{ color: "text.secondary", fontSize: 12 }}>
+                  {stat.label}
+                </Typography>
+                <Typography
+                  sx={{ color: stat.color, fontSize: 16, fontWeight: 700 }}
+                >
+                  {stat.value}
+                </Typography>
+              </CardContent>
+            </Card>
+          ))}
         </Stack>
-      </Box>
+
+        <Button
+          component={RouterLink}
+          to={`/recommendations/${worker.id}`}
+          variant="outlined"
+          sx={{ flexShrink: 0 }}
+        >
+          Συστάσεις
+        </Button>
+      </Panel>
 
       <Grid container spacing={2} sx={{ width: "100%", mx: 0, my: 2 }}>
-        <Grid
-          sx={{
-            p: 2,
-            background: "white",
-            border: "2px solid grey",
-            borderRadius: 2,
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-          }}
-          size={{ xs: 12, md: 8 }}
-        >
-          <Typography
-            sx={{ color: "text.primary", fontSize: 20, fontWeight: 700 }}
-          >
-            Συμμόρφωση ΜΑΠ - τελευταίες 30 ημέρες
-          </Typography>
-
-          <Box
-            sx={{ display: "flex", flexDirection: "row", gap: 1, height: 100 }}
-          >
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Panel title="Συμμόρφωση ΜΑΠ - τελευταίες 30 ημέρες">
             <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                height: "100%",
-              }}
+              sx={{ display: "flex", flexDirection: "row", gap: 1, height: 100 }}
             >
-              <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
-                100%
-              </Typography>
-              <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
-                50%
-              </Typography>
-            </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  height: "100%",
+                }}
+              >
+                <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
+                  100%
+                </Typography>
+                <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
+                  50%
+                </Typography>
+              </Box>
 
-            <Box sx={{ flexGrow: 1 }}>
-              <SparkLineChart
-                color="green"
-                data={[1, 4, 2, 5, 7, 2, 4, 6]}
-                height={100}
-              />
+              <Box sx={{ flexGrow: 1 }}>
+                <SparkLineChart
+                  color="green"
+                  data={trend(worker.complianceScore, complianceOffsets, 100)}
+                  height={100}
+                  showTooltip
+                />
+              </Box>
             </Box>
-          </Box>
+          </Panel>
         </Grid>
 
-        <Grid
-          sx={{
-            p: 2,
-            background: "white",
-            border: "2px solid grey",
-            borderRadius: 2,
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-          }}
-          size={{ xs: 12, md: 4 }}
-        >
-          <Typography
-            sx={{ color: "text.primary", fontSize: 20, fontWeight: 700 }}
-          >
-            Βιομετρικά - παλμοί & κόπωση
-          </Typography>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Panel title="Βιομετρικά - παλμοί & κόπωση">
+            <SparkLineChart
+              data={trend(worker.heartRate, heartRateOffsets, 140)}
+              height={100}
+              color="red"
+              showTooltip
+            />
+            <SparkLineChart
+              data={trend(fatigueScore, fatigueOffsets, 100)}
+              height={100}
+              color="orange"
+              showTooltip
+            />
 
-          <SparkLineChart data={[1, 4, 2, 5, 7, 2, 4, 6]} height={100} />
-          <SparkLineChart
-            color="red"
-            data={[1, 4, 2, 5, 7, 2, 4, 6]}
-            height={100}
-          />
+            <Divider />
 
-          <Divider />
-
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-              gap: 2,
-            }}
-          >
-            <p>
-              <FiberManualRecordIcon
-                fontSize="inherit"
-                color="info"
-                sx={{ pt: 0.5 }}
-              />
-              Δείκτης κόπωσης
-            </p>
-
-            <p>
-              <FiberManualRecordIcon
-                fontSize="inherit"
-                color="error"
-                sx={{ pt: 0.5 }}
-              />
-              Παλμοί
-            </p>
-          </Box>
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{ justifyContent: "center", flexWrap: "wrap" }}
+            >
+              <Typography sx={{ fontSize: 12 }}>
+                <FiberManualRecordIcon fontSize="inherit" color="warning" />
+                Δείκτης κόπωσης
+              </Typography>
+              <Typography sx={{ fontSize: 12 }}>
+                <FiberManualRecordIcon fontSize="inherit" color="error" />
+                Παλμοί
+              </Typography>
+            </Stack>
+          </Panel>
         </Grid>
       </Grid>
 
-      <Box
-        sx={{
-          p: 2,
-          background: "white",
-          border: "2px solid grey",
-          borderRadius: 2,
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-        }}
-      >
-        <Typography
-          sx={{ color: "text.primary", fontSize: 20, fontWeight: 700 }}
-        >
-          Ιστορικό περιστατικών & παραβάσεων
-        </Typography>
+      <Panel title="Ιστορικό περιστατικών & παραβάσεων">
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <Table sx={{ minWidth: 650 }} aria-label="Ιστορικό εργαζομένου">
             <TableHead>
               <TableRow>
                 <TableCell align="left">ΗΜ/ΝΙΑ</TableCell>
                 <TableCell align="left">ΤΥΠΟΣ</TableCell>
                 <TableCell align="left">ΖΩΝΗ</TableCell>
                 <TableCell align="left">ΣΥΝΘΗΚΕΣ</TableCell>
-                <TableCell align="left">ΣΟΒΑΡΟΤ.</TableCell>
+                <TableCell align="left">ΣΟΒΑΡΟΤΗΤΑ</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {dataRows.map((row) => (
+              {workerIncidents.map((incident) => (
                 <TableRow
-                  key={row.id}
+                  key={`${incident.date}-${incident.type}`}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell align="left">{row.date}</TableCell>
-                  <TableCell align="left">{row.type}</TableCell>
-                  <TableCell align="left">{row.zone}</TableCell>
-                  <TableCell align="left">{row.conditions}</TableCell>
+                  <TableCell align="left">{formatDate(incident.date)}</TableCell>
+                  <TableCell align="left">{incident.type}</TableCell>
+                  <TableCell align="left">{worker.zone}</TableCell>
                   <TableCell align="left">
-                    <Chip
-                      label={row.severity}
-                      size="small"
-                      //@ts-ignore
-                      color={severityColor[row.severity]}
-                    />
+                    Βάρδια {incident.conditions.shift} •{" "}
+                    {incident.conditions.tempC}°C • Κόπωση:{" "}
+                    {fatigueText[incident.conditions.fatigue]}
+                  </TableCell>
+                  <TableCell align="left">
+                    <SeverityChip severity={incident.severity} />
                   </TableCell>
                 </TableRow>
               ))}
+              {workerIncidents.length === 0 && (
+                <TableRow>
+                  <TableCell align="center" colSpan={5}>
+                    <Typography sx={{ color: "text.secondary", py: 2 }}>
+                      Δεν καταγράφηκαν περιστατικά για αυτόν τον εργαζόμενο.
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </TableContainer>
-      </Box>
+      </Panel>
     </>
   );
 }

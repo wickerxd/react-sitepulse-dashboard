@@ -11,6 +11,11 @@ node_modules
 dist
 dist-ssr
 *.local
+.vercel
+.netlify
+
+# Assignment material
+SafeWithCarmen_TakeHomeAssignment_FrontEnd.pdf
 
 # Editor directories and files
 .vscode/*
