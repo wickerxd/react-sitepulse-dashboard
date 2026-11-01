@@ -75,22 +75,23 @@ export default function Worker() {
     {
       label: "Μέση Συμμόρφωση",
       value: `${worker.complianceScore}%`,
-      color: worker.complianceScore >= 80 ? "green" : "orange",
+      color:
+        worker.complianceScore >= 80 ? "success.main" : "warning.main",
     },
     {
       label: "Ενεργές ειδοποιήσεις",
       value: workerAlerts.length,
-      color: "orange",
+      color: "warning.main",
     },
     {
       label: "Περιστατικά",
       value: workerIncidents.length,
-      color: "red",
+      color: "error.main",
     },
     {
       label: "Μ.Ο Παλμών",
       value: `${worker.heartRate} bpm`,
-      color: "darkblue",
+      color: "info.main",
     },
   ];
 
@@ -109,7 +110,7 @@ export default function Worker() {
           </Avatar>
           <Stack>
             <Typography
-              component="h1"
+              component="h2"
               sx={{ color: "text.primary", fontSize: 20, fontWeight: 700 }}
             >
               {worker.name}
@@ -130,7 +131,10 @@ export default function Worker() {
           }}
         >
           {stats.map((stat) => (
-            <Card key={stat.label} sx={{ minWidth: 120 }}>
+            <Card
+              key={stat.label}
+              sx={{ minWidth: 120, bgcolor: "background.default" }}
+            >
               <CardContent sx={{ py: 1.5, "&:last-child": { pb: 1.5 } }}>
                 <Typography sx={{ color: "text.secondary", fontSize: 12 }}>
                   {stat.label}
@@ -179,7 +183,7 @@ export default function Worker() {
 
               <Box sx={{ flexGrow: 1 }}>
                 <SparkLineChart
-                  color="green"
+                  color="#22c55e"
                   data={trend(worker.complianceScore, complianceOffsets, 100)}
                   height={100}
                   showTooltip
@@ -194,13 +198,13 @@ export default function Worker() {
             <SparkLineChart
               data={trend(worker.heartRate, heartRateOffsets, 140)}
               height={100}
-              color="red"
+              color="#ef4444"
               showTooltip
             />
             <SparkLineChart
               data={trend(fatigueScore, fatigueOffsets, 100)}
               height={100}
-              color="orange"
+              color="#f59e0b"
               showTooltip
             />
 

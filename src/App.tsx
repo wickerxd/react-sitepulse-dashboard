@@ -9,6 +9,7 @@ const ConstructionSites = lazy(() => import("./pages/ConstructionSites"));
 const Accidents = lazy(() => import("./pages/Accidents"));
 const Robot = lazy(() => import("./pages/Robot"));
 const Recommendations = lazy(() => import("./pages/Recommendations"));
+const Reports = lazy(() => import("./pages/Reports"));
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="robot" element={<Robot />} />
         <Route path="recommendations" element={<Recommendations />} />
         <Route path="recommendations/:id" element={<Recommendations />} />
+        <Route path="reports" element={<Reports />} />
         <Route
           path="reccomendations"
           element={<Navigate to="/recommendations" replace />}

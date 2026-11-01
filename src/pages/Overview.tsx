@@ -26,7 +26,7 @@ export default function Overview() {
     <>
       <KpiGrid kpis={kpis} />
 
-      <Grid container spacing={2} sx={{ width: "100%", mx: 0, my: 6 }}>
+      <Grid container spacing={2} sx={{ width: "100%", mx: 0, mt: 3 }}>
         <Grid size={{ xs: 12, md: 8 }}>
           <WorkerTab workers={workers} />
         </Grid>

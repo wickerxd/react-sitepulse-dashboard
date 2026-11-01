@@ -54,7 +54,7 @@ function KpiContent({ kpi }: KpiContentProps) {
         <Typography sx={{ fontSize: 20, fontWeight: 700 }}>
           {kpi.content}
         </Typography>
-        <FiberManualRecordIcon color="secondary" aria-hidden="true" />
+        <FiberManualRecordIcon color="error" aria-hidden="true" />
       </Box>
     );
   }

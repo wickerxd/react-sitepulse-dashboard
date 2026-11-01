@@ -1,150 +1,162 @@
-import { useState, type MouseEvent } from "react";
-import { NavLink } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
+import Avatar from "@mui/material/Avatar";
+import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
+import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
-import MenuIcon from "@mui/icons-material/Menu";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
+import ColorModeToggle from "./ColorModeToggle";
+import { alerts } from "../data";
 
-interface NavItem {
-  label: string;
-  to: string;
+interface PageMeta {
+  title: string;
+  subtitle: string;
 }
 
-const menuItems: NavItem[] = [
-  { label: "Επισκόπηση", to: "/" },
-  { label: "Εργαζόμενος", to: "/worker" },
-  { label: "Ρόλοι", to: "/roles" },
-  { label: "Εργοτάξια", to: "/construction_sites" },
-  { label: "Ατυχήματα", to: "/accidents" },
-  { label: "Robot", to: "/robot" },
-  { label: "Συστάσεις", to: "/recommendations" },
-];
+const defaultMeta: PageMeta = {
+  title: "Επισκόπηση",
+  subtitle: "Κατάσταση ασφάλειας σε πραγματικό χρόνο",
+};
 
-function Header() {
-  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+const pageMeta: Record<string, PageMeta> = {
+  "/": defaultMeta,
+  "/worker": {
+    title: "Εργαζόμενοι",
+    subtitle: "Συμμόρφωση ΜΑΠ, βιομετρικά και ιστορικό",
+  },
+  "/roles": {
+    title: "Ανάλυση ρόλων",
+    subtitle: "Σύγκριση συμμόρφωσης και παραβάσεων ανά θέση",
+  },
+  "/construction_sites": {
+    title: "Εργοτάξια",
+    subtitle: "Κίνδυνος, ειδοποιήσεις και τάσεις ανά εγκατάσταση",
+  },
+  "/accidents": {
+    title: "Ατυχήματα",
+    subtitle: "Τάσεις, συνθήκες και μητρώο περιστατικών",
+  },
+  "/robot": {
+    title: "Ρομπότ",
+    subtitle: "Ζωντανή περιπολία, ανιχνεύσεις και κάλυψη ζωνών",
+  },
+  "/recommendations": {
+    title: "Συστάσεις",
+    subtitle: "Εξατομικευμένες προτάσεις ασφάλειας",
+  },
+  "/reports": {
+    title: "Αναφορές",
+    subtitle: "Ιστορικό, προγραμματισμοί και εξαγωγές δεδομένων",
+  },
+};
 
-  const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
+function getPageMeta(pathname: string): PageMeta {
+  if (pathname.startsWith("/worker/")) {
+    return {
+      title: "Προφίλ εργαζομένου",
+      subtitle: "Αναλυτική εικόνα συμμόρφωσης και υγείας",
+    };
+  }
+  if (pathname.startsWith("/recommendations/")) {
+    return {
+      title: "Συστάσεις εργαζομένου",
+      subtitle: "Προτεραιότητες και προτεινόμενες ενέργειες",
+    };
+  }
+  return pageMeta[pathname] ?? defaultMeta;
+}
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+interface HeaderProps {
+  onOpenSidebar: () => void;
+}
+
+export default function Header({ onOpenSidebar }: HeaderProps) {
+  const { pathname } = useLocation();
+  const meta = getPageMeta(pathname);
 
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters component="nav" aria-label="Κύρια πλοήγηση">
-          <HealthAndSafetyIcon
-            sx={{ display: { xs: "none", md: "flex" }, mr: 1, color: "white" }}
-          />
+    <AppBar
+      position="sticky"
+      elevation={0}
+      sx={{
+        bgcolor: "background.paper",
+        color: "text.primary",
+        backgroundImage: "none",
+        borderBottom: 1,
+        borderColor: "divider",
+      }}
+    >
+      <Toolbar
+        sx={{
+          minHeight: { xs: 64, md: 76 },
+          gap: 1,
+          px: { xs: 2, md: 3 },
+        }}
+      >
+        <IconButton
+          aria-label="Άνοιγμα πλοήγησης"
+          onClick={onOpenSidebar}
+          sx={{ display: { md: "none" } }}
+        >
+          <MenuRoundedIcon />
+        </IconButton>
+
+        <Box sx={{ minWidth: 0, flexGrow: 1 }}>
           <Typography
-            variant="h6"
-            noWrap
-            component={NavLink}
-            to="/"
+            component="h1"
             sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontWeight: 700,
-              color: "white",
-              textDecoration: "none",
+              fontSize: { xs: 18, md: 22 },
+              fontWeight: 800,
+              lineHeight: 1.2,
+              letterSpacing: "-0.02em",
             }}
           >
-            Safe With Carmen
+            {meta.title}
           </Typography>
-
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="Άνοιγμα μενού πλοήγησης"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-              keepMounted
-              transformOrigin={{ vertical: "top", horizontal: "left" }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{ display: { xs: "block", md: "none" } }}
-            >
-              {menuItems.map((item) => (
-                <MenuItem
-                  key={item.label}
-                  component={NavLink}
-                  to={item.to}
-                  end={item.to === "/"}
-                  onClick={handleCloseNavMenu}
-                  sx={{ "&.active": { bgcolor: "action.selected" } }}
-                >
-                  <Typography sx={{ textAlign: "center" }}>
-                    {item.label}
-                  </Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-
-          <HealthAndSafetyIcon
-            sx={{ display: { xs: "flex", md: "none" }, mr: 1, color: "white" }}
-          />
           <Typography
-            variant="h5"
-            noWrap
-            component={NavLink}
-            to="/"
             sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontWeight: 700,
-              color: "white",
-              textDecoration: "none",
+              display: { xs: "none", sm: "block" },
+              color: "text.secondary",
+              fontSize: 12,
             }}
           >
-            Safe With Carmen
+            {meta.subtitle}
           </Typography>
+        </Box>
 
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, mt: 1 }}>
-            {menuItems.map((item) => (
-              <Button
-                key={item.label}
-                component={NavLink}
-                to={item.to}
-                end={item.to === "/"}
-                sx={{
-                  my: 2,
-                  color: "white",
-                  display: "block",
-                  "&.active": {
-                    fontWeight: 700,
-                    textDecoration: "underline",
-                    textUnderlineOffset: "6px",
-                  },
-                }}
-              >
-                {item.label}
-              </Button>
-            ))}
-          </Box>
-        </Toolbar>
-      </Container>
+        <Chip
+          label="Live"
+          color="success"
+          size="small"
+          variant="outlined"
+          sx={{ display: { xs: "none", lg: "inline-flex" } }}
+        />
+        <ColorModeToggle />
+        <Tooltip title="Ειδοποιήσεις">
+          <IconButton aria-label="Ειδοποιήσεις">
+            <Badge badgeContent={alerts.length} color="error">
+              <NotificationsNoneRoundedIcon />
+            </Badge>
+          </IconButton>
+        </Tooltip>
+        <Avatar
+          alt="Επόπτης"
+          sx={{
+            width: 34,
+            height: 34,
+            bgcolor: "primary.main",
+            fontSize: 13,
+            fontWeight: 700,
+          }}
+        >
+          ΕΠ
+        </Avatar>
+      </Toolbar>
     </AppBar>
   );
 }
-
-export default Header;

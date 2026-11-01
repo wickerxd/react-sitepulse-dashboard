@@ -1,20 +1,19 @@
-# Safe With Carmen
+# SitePulse
 
-Supervisor dashboard for workplace safety. The app visualizes worker compliance with personal protective equipment (PPE), biometrics, alerts, incidents, construction-site risk, and Unitree robot patrol data.
+SitePulse is a safety-operations dashboard for construction teams. It brings worker PPE compliance, biometrics, alerts, incidents, site risk, robot patrol telemetry, and reporting into one responsive workspace.
 
-This project was built as a front-end take-home assignment. It is a client-only React application with static mock data and no backend or real API integration.
+The app is a client-only React project with static mock data and no backend or real API integration.
 
 ## Screens
-
-All seven assignment screens are implemented:
 
 1. **Overview** - KPI tiles, worker list with search and filters, worker detail panel, and alert feed.
 2. **Worker history** - compliance trend, biometrics, and incident history for a selected worker.
 3. **Roles** - compliance, violations, and incidents compared by job role.
 4. **Construction sites** - compliance and alerts per site, monthly trends, and a risk-zone map.
 5. **Accidents** - accidents by month and shift hour, weather and fatigue analysis, and an incident registry.
-6. **Robot** - Unitree robot status, live detections, zone coverage, patrol route, and detection history.
+6. **Robot** - robot status, live detections, zone coverage, patrol route, and detection history.
 7. **Recommendations** - personalized PPE recommendations, compliance gauge, PPE gaps, and suggested training.
+8. **Reports** - report history, scheduled exports, status tracking, volume analytics, and quick exports.
 
 ## Tech stack
 
@@ -49,23 +48,32 @@ npm run lint     # run ESLint
 
 ```text
 src/
-  components/   reusable UI components and dashboard sections
+  components/   reusable UI, navigation, and dashboard sections
   layouts/      shared application shell
-  pages/        one component per assignment screen
+  pages/        one component per dashboard screen
   data.ts       typed mock data
+  theme.ts      light and dark MUI theme configuration
   types.ts      shared domain types
   App.tsx       application routes
-  main.tsx      theme and application entry point
+  main.tsx      theme provider and application entry point
 ```
+
+## Appearance and theming
+
+- The dashboard uses a persistent sidebar on desktop and a temporary drawer on mobile.
+- Light and dark modes are available from the header toggle.
+- The selected mode is stored in `localStorage` under `sitepulse-mode` through MUI's `useColorScheme` hook.
+- On the first visit, the app follows the operating system preference through `prefers-color-scheme`.
 
 ## Design decisions
 
 - **Material UI** is used for layout, cards, tables, chips, and form controls to keep the UI consistent and responsive without custom CSS.
+- **MUI CSS theme variables** power the light and dark palettes, so components and charts stay legible in both modes.
 - **MUI X Charts** handles trend, comparison, and distribution charts.
 - **Hardcoded data** lives in `src/data.ts` and is typed in `src/types.ts`. Page-level aggregates are derived from the same dataset so figures stay consistent across screens.
-- **Greek UI labels** match the assignment data and target users. Code, types, and component names remain in English.
-- **Responsive layout** uses MUI Grid breakpoints and flexible panels, with desktop and tablet as the primary targets.
-- **Navigation** links the dashboard, worker history, and recommendation screens. Worker names link to their history, and worker pages link to personalized recommendations.
+- **Greek UI labels** match the mock dataset and target users. Code, types, and component names remain in English.
+- **Responsive layout** uses MUI Grid breakpoints, a collapsible navigation drawer, and flexible panels.
+- **Navigation** includes the dashboard, worker history, and recommendation screens. Worker names link to their history, and worker pages link to personalized recommendations.
 - **Accessibility basics** include semantic headings, table labels, button labels, and progress indicators with descriptive `aria-label` values.
 
 ## Data

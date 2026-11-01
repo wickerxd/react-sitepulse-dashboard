@@ -3,7 +3,6 @@ import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
-import type { ChipProps } from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
@@ -15,21 +14,22 @@ import Panel from "../components/Panel";
 import { workers } from "../data";
 import type { Worker } from "../types";
 
+type RecommendationTone = "error" | "warning" | "success";
+
 interface Recommendation {
   id: string;
   severity: string;
-  color: string;
-  chipColor: ChipProps["color"];
+  tone: RecommendationTone;
   title: string;
   subtitle: string;
   showButton: boolean;
 }
 
 const tones = {
-  high: { color: "red", chipColor: "error" },
-  medium: { color: "orange", chipColor: "warning" },
-  positive: { color: "green", chipColor: "success" },
-} satisfies Record<string, { color: string; chipColor: ChipProps["color"] }>;
+  high: { tone: "error" },
+  medium: { tone: "warning" },
+  positive: { tone: "success" },
+} satisfies Record<string, { tone: RecommendationTone }>;
 
 function buildRecommendations(worker: Worker): Recommendation[] {
   const recommendations: Recommendation[] = [];
@@ -96,10 +96,10 @@ export default function Recommendations() {
   const recommendations = buildRecommendations(worker);
   const gaugeColor =
     worker.complianceScore >= 80
-      ? "#2e7d32"
+      ? "#22c55e"
       : worker.complianceScore >= 60
-        ? "#c78c0a"
-        : "#d32f2f";
+        ? "#f59e0b"
+        : "#ef4444";
   const gaugeLabel =
     worker.complianceScore >= 80
       ? "Υψηλός"
@@ -126,14 +126,7 @@ export default function Recommendations() {
 
   return (
     <>
-      <Typography
-        component="h1"
-        sx={{ color: "text.primary", fontSize: 20, fontWeight: 700 }}
-      >
-        Συστάσεις Συμμόρφωσης ΜΑΠ (AI)
-      </Typography>
-
-      <Grid container spacing={2} sx={{ width: "100%", mx: 0, my: 2 }}>
+      <Grid container spacing={2} sx={{ width: "100%", mx: 0 }}>
         <Grid size={{ xs: 12, md: 4 }}>
           <Panel sx={{ alignItems: "center" }}>
             <Stack direction="row" sx={{ alignItems: "center" }} spacing={1}>
@@ -180,7 +173,11 @@ export default function Recommendations() {
                 <Typography
                   key={gap.label}
                   sx={{
-                    color: gap.ok ? "green" : gap.label === "Κράνος" ? "red" : "orange",
+                    color: gap.ok
+                      ? "success.main"
+                      : gap.label === "Κράνος"
+                        ? "error.main"
+                        : "warning.main",
                     fontSize: 16,
                   }}
                 >
@@ -218,11 +215,10 @@ export default function Recommendations() {
                   sx={{
                     p: 2,
                     borderRadius: 2,
-                    borderTop: `2px solid ${recommendation.color}`,
-                    borderRight: `2px solid ${recommendation.color}`,
-                    borderBottom: `2px solid ${recommendation.color}`,
-                    borderLeft: `8px solid ${recommendation.color}`,
-                    bgcolor: "white",
+                    border: "1px solid",
+                    borderColor: `${recommendation.tone}.main`,
+                    borderLeftWidth: 6,
+                    bgcolor: "background.default",
                     display: "flex",
                     flexDirection: { xs: "column", sm: "row" },
                     justifyContent: "space-between",
@@ -235,7 +231,7 @@ export default function Recommendations() {
                   >
                     <Chip
                       label={recommendation.severity}
-                      color={recommendation.chipColor}
+                      color={recommendation.tone}
                       size="small"
                       sx={{ width: "fit-content" }}
                     />

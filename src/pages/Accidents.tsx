@@ -8,7 +8,6 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Typography from "@mui/material/Typography";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { PieChart } from "@mui/x-charts/PieChart";
 import KpiGrid from "../components/KpiGrid";
@@ -118,14 +117,7 @@ export default function Accidents() {
 
   return (
     <>
-      <Typography
-        component="h1"
-        sx={{ color: "text.primary", fontSize: 20, fontWeight: 700 }}
-      >
-        Ατυχήματα & ανάλυση συνθηκών
-      </Typography>
-
-      <Box sx={{ my: 2 }}>
+      <Box sx={{ mb: 3 }}>
         <KpiGrid kpis={kpis} />
       </Box>
 

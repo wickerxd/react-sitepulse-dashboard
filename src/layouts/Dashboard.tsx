@@ -1,10 +1,10 @@
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Skeleton from "@mui/material/Skeleton";
 import Header from "../components/Header";
+import Sidebar from "../components/Sidebar";
 
 function PageSkeleton() {
   return (
@@ -28,17 +28,44 @@ function PageSkeleton() {
   );
 }
 
-function Dashboard() {
+export default function Dashboard() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
-    <>
-      <Header />
-      <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
-        <Suspense fallback={<PageSkeleton />}>
-          <Outlet />
-        </Suspense>
-      </Container>
-    </>
+    <Box
+      sx={{
+        display: "flex",
+        minHeight: "100vh",
+        bgcolor: "background.default",
+      }}
+    >
+      <Sidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+
+      <Box
+        sx={{
+          flexGrow: 1,
+          minWidth: 0,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Header onOpenSidebar={() => setMobileOpen(true)} />
+
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            width: "100%",
+            maxWidth: 1600,
+            mx: "auto",
+            p: { xs: 2, md: 3 },
+          }}
+        >
+          <Suspense fallback={<PageSkeleton />}>
+            <Outlet />
+          </Suspense>
+        </Box>
+      </Box>
+    </Box>
   );
 }
-
-export default Dashboard;

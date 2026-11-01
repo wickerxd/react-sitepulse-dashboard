@@ -118,3 +118,40 @@ export interface RiskZone {
   incidents: number;
   note: string;
 }
+
+export type ReportStatus = "ready" | "processing" | "scheduled" | "failed";
+export type ReportFormat = "PDF" | "CSV" | "XLSX";
+export type ReportType =
+  | "Συμμόρφωση ΜΑΠ"
+  | "Ατυχήματα"
+  | "Επιθεώρηση εργοταξίου"
+  | "Υγεία εξοπλισμού";
+
+export interface SafetyReport {
+  id: string;
+  title: string;
+  type: ReportType;
+  scope: string;
+  period: string;
+  format: ReportFormat;
+  status: ReportStatus;
+  generatedAt: string;
+  sizeMb: number;
+  owner: string;
+}
+
+export interface ScheduledReport {
+  id: string;
+  title: string;
+  cadence: string;
+  nextRun: string;
+  recipients: number;
+  format: ReportFormat;
+  active: boolean;
+}
+
+export interface ReportVolumePoint {
+  month: string;
+  generated: number;
+  scheduled: number;
+}

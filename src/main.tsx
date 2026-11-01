@@ -3,24 +3,17 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
 import CssBaseline from "@mui/material/CssBaseline";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { lightBlue, grey } from "@mui/material/colors";
-
-const theme = createTheme({
-  palette: {
-    background: {
-      default: grey[300],
-    },
-    primary: lightBlue,
-    secondary: {
-      main: "#b71c1c",
-    },
-  },
-});
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./theme";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ThemeProvider theme={theme}>
+    <ThemeProvider
+      theme={theme}
+      defaultMode="system"
+      modeStorageKey="sitepulse-mode"
+      colorSchemeStorageKey="sitepulse-scheme"
+    >
       <CssBaseline />
       <BrowserRouter>
         <App />

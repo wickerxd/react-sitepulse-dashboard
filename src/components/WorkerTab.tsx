@@ -14,7 +14,6 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { grey } from "@mui/material/colors";
 import BatteryChargingFullIcon from "@mui/icons-material/BatteryChargingFull";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
@@ -39,9 +38,9 @@ const fatigueText: Record<Fatigue, string> = {
 };
 
 const fatigueColor: Record<Fatigue, string> = {
-  high: "red",
-  medium: "orange",
-  low: "green",
+  high: "error.main",
+  medium: "warning.main",
+  low: "success.main",
 };
 
 function workerTrend(score: number): number[] {
@@ -161,8 +160,9 @@ export default function WorkerTab({ workers }: WorkerTabProps) {
           <Box
             sx={{
               p: 2,
-              background: grey[300],
-              border: "2px solid grey",
+              bgcolor: "background.default",
+              border: 1,
+              borderColor: "divider",
               borderRadius: 2,
             }}
           >
@@ -210,7 +210,7 @@ export default function WorkerTab({ workers }: WorkerTabProps) {
                 <SparkLineChart
                   data={workerTrend(selectedWorker.complianceScore)}
                   height={80}
-                  color="green"
+                  color="#22c55e"
                 />
               </Stack>
 
@@ -252,7 +252,9 @@ export default function WorkerTab({ workers }: WorkerTabProps) {
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
                   <Typography
                     sx={{
-                      color: selectedWorker.connected ? "green" : "red",
+                      color: selectedWorker.connected
+                        ? "success.main"
+                        : "error.main",
                       fontSize: 12,
                     }}
                   >

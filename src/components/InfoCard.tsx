@@ -13,6 +13,8 @@ export default function InfoCard({ title, children }: InfoCardProps) {
     <Card
       sx={{
         minWidth: 175,
+        height: "100%",
+        borderRadius: 2,
       }}
     >
       <CardContent>

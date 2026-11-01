@@ -12,11 +12,11 @@ const alertText: Record<AlertType, string> = {
   gas_leak: "Διαρροή αερίου",
 };
 
-const alertBorderColor: Record<Severity, string> = {
-  critical: "red",
-  high: "orange",
-  medium: "goldenrod",
-  low: "grey",
+const alertTone: Record<Severity, "error" | "warning" | "info" | "success"> = {
+  critical: "error",
+  high: "warning",
+  medium: "info",
+  low: "success",
 };
 
 function findWorkerName(workerId: string): string {
@@ -34,13 +34,13 @@ export default function NotificationDisplay({
     <Box
       component="article"
       sx={{
-        p: 2,
+        p: 1.5,
         borderRadius: 2,
-        borderTop: `2px solid ${alertBorderColor[alert.severity]}`,
-        borderRight: `2px solid ${alertBorderColor[alert.severity]}`,
-        borderBottom: `2px solid ${alertBorderColor[alert.severity]}`,
-        borderLeft: `8px solid ${alertBorderColor[alert.severity]}`,
-        bgcolor: "white",
+        border: 1,
+        borderColor: "divider",
+        borderLeftWidth: 4,
+        borderLeftColor: `${alertTone[alert.severity]}.main`,
+        bgcolor: "background.default",
         display: "flex",
         flexDirection: "column",
         gap: 0.5,
@@ -48,11 +48,11 @@ export default function NotificationDisplay({
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <SeverityChip severity={alert.severity} />
-        <Typography sx={{ fontSize: 16, fontWeight: 700 }}>
+        <Typography sx={{ fontSize: 15, fontWeight: 700 }}>
           {alertText[alert.type]}
         </Typography>
       </Box>
-      <Typography sx={{ color: "text.primary", fontSize: 16 }}>
+      <Typography sx={{ color: "text.primary", fontSize: 14 }}>
         {alert.message}
       </Typography>
       <Typography sx={{ color: "text.secondary", fontSize: 12 }}>
@@ -65,7 +65,7 @@ export default function NotificationDisplay({
           size="small"
           aria-label={`Επιβεβαίωση ειδοποίησης: ${alert.message}`}
         >
-          Ack
+          Επιβεβαίωση
         </Button>
       )}
     </Box>

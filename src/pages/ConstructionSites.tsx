@@ -9,6 +9,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
+import { useTheme } from "@mui/material/styles";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { LineChart } from "@mui/x-charts/LineChart";
 import KpiGrid from "../components/KpiGrid";
@@ -24,18 +25,14 @@ import {
 } from "../data";
 import type { Severity } from "../types";
 
-const riskBackground: Record<Severity, string> = {
-  critical: "#ffebee",
-  high: "#fff3e0",
-  medium: "#fffde7",
-  low: "#e8f5e9",
-};
-
-const riskBorder: Record<Severity, string> = {
-  critical: "#d32f2f",
-  high: "#ed6c02",
-  medium: "#f9a825",
-  low: "#2e7d32",
+const riskTone: Record<
+  Severity,
+  "error" | "warning" | "info" | "success"
+> = {
+  critical: "error",
+  high: "warning",
+  medium: "info",
+  low: "success",
 };
 
 const severityOrder: Severity[] = ["critical", "high", "medium", "low"];
@@ -72,6 +69,7 @@ const highRiskZones = riskZones.filter(
 ).length;
 
 export default function ConstructionSites() {
+  const theme = useTheme();
   const kpis: Kpi[] = [
     { type: "text", title: "Ενεργά εργοτάξια", content: sites.length },
     {
@@ -85,14 +83,7 @@ export default function ConstructionSites() {
 
   return (
     <>
-      <Typography
-        component="h1"
-        sx={{ color: "text.primary", fontSize: 20, fontWeight: 700 }}
-      >
-        Ανάλυση ανά εργοτάξιο
-      </Typography>
-
-      <Box sx={{ my: 2 }}>
+      <Box sx={{ mb: 3 }}>
         <KpiGrid kpis={kpis} />
       </Box>
 
@@ -195,43 +186,52 @@ export default function ConstructionSites() {
             subtitle="Ζώνες με βάση ενεργές ειδοποιήσεις και περιστατικά"
           >
             <Grid container spacing={1}>
-              {riskZones.map((zone) => (
-                <Grid key={`${zone.site}-${zone.zone}`} size={{ xs: 12, sm: 6 }}>
-                  <Box
-                    component="article"
-                    sx={{
-                      p: 1.5,
-                      borderRadius: 2,
-                      border: `2px solid ${riskBorder[zone.risk]}`,
-                      background: riskBackground[zone.risk],
-                      height: "100%",
-                    }}
+              {riskZones.map((zone) => {
+                const riskColor = theme.palette[riskTone[zone.risk]].main;
+
+                return (
+                  <Grid
+                    key={`${zone.site}-${zone.zone}`}
+                    size={{ xs: 12, sm: 6 }}
                   >
                     <Box
+                      component="article"
                       sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        gap: 1,
+                        p: 1.5,
+                        borderRadius: 2,
+                        border: "1px solid",
+                        borderColor: riskColor,
+                        background: `color-mix(in srgb, ${riskColor} 10%, transparent)`,
+                        height: "100%",
                       }}
                     >
-                      <Typography sx={{ fontSize: 14, fontWeight: 700 }}>
-                        {zone.zone}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          gap: 1,
+                        }}
+                      >
+                        <Typography sx={{ fontSize: 14, fontWeight: 700 }}>
+                          {zone.zone}
+                        </Typography>
+                        <SeverityChip severity={zone.risk} />
+                      </Box>
+                      <Typography sx={{ color: "text.secondary", fontSize: 12 }}>
+                        {zone.site}
                       </Typography>
-                      <SeverityChip severity={zone.risk} />
+                      <Typography sx={{ fontSize: 12, mt: 1 }}>
+                        {zone.note}
+                      </Typography>
+                      <Typography sx={{ fontSize: 12, mt: 0.5 }}>
+                        {zone.workers} εργαζόμενοι • {zone.incidents}{" "}
+                        περιστατικά
+                      </Typography>
                     </Box>
-                    <Typography sx={{ color: "text.secondary", fontSize: 12 }}>
-                      {zone.site}
-                    </Typography>
-                    <Typography sx={{ fontSize: 12, mt: 1 }}>
-                      {zone.note}
-                    </Typography>
-                    <Typography sx={{ fontSize: 12, mt: 0.5 }}>
-                      {zone.workers} εργαζόμενοι • {zone.incidents} περιστατικά
-                    </Typography>
-                  </Box>
-                </Grid>
-              ))}
+                  </Grid>
+                );
+              })}
             </Grid>
           </Panel>
         </Grid>
