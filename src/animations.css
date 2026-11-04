@@ -1,0 +1,51 @@
+:root {
+  --page-enter-duration: 650ms;
+  --page-enter-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --page-enter-distance: 18px;
+}
+
+.page-transition > * {
+  opacity: 0;
+  transform: translate3d(0, calc(var(--page-enter-distance) * -1), 0);
+  animation: page-drop var(--page-enter-duration) var(--page-enter-ease) both;
+}
+
+.page-transition > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.page-transition > *:nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.page-transition > *:nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.page-transition > *:nth-child(4) {
+  animation-delay: 210ms;
+}
+
+@keyframes page-drop {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, calc(var(--page-enter-distance) * -1), 0);
+  }
+
+  60% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition > * {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
