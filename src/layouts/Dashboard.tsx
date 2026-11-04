@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Skeleton from "@mui/material/Skeleton";
 import Header from "../components/Header";
+import PageTransition from "../components/PageTransition";
 import Sidebar from "../components/Sidebar";
 
 function PageSkeleton() {
@@ -62,7 +63,9 @@ export default function Dashboard() {
           }}
         >
           <Suspense fallback={<PageSkeleton />}>
-            <Outlet />
+            <PageTransition>
+              <Outlet />
+            </PageTransition>
           </Suspense>
         </Box>
       </Box>
